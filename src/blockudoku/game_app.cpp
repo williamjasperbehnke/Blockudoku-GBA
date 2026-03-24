@@ -48,6 +48,7 @@ namespace blockudoku
     void game_app::open_seed_entry()
     {
         _run_seed.begin_manual_entry();
+        _entry_dpad.reset();
         _scene = scene::enter_seed;
     }
 
@@ -206,6 +207,7 @@ namespace blockudoku
         if(_high_scores.qualifies(_pending_score))
         {
             _initials_entry.begin();
+            _entry_dpad.reset();
             _scene = scene::enter_initials;
         }
         else
@@ -216,19 +218,19 @@ namespace blockudoku
 
     void game_app::update_enter_initials()
     {
-        if(bn::keypad::left_pressed())
+        if(_entry_dpad.left())
         {
             _initials_entry.move_cursor(-1);
         }
-        else if(bn::keypad::right_pressed())
+        else if(_entry_dpad.right())
         {
             _initials_entry.move_cursor(1);
         }
-        else if(bn::keypad::up_pressed())
+        else if(_entry_dpad.up())
         {
             _initials_entry.adjust_selected_letter(1);
         }
-        else if(bn::keypad::down_pressed())
+        else if(_entry_dpad.down())
         {
             _initials_entry.adjust_selected_letter(-1);
         }
@@ -245,19 +247,19 @@ namespace blockudoku
 
     void game_app::update_enter_seed()
     {
-        if(bn::keypad::left_pressed())
+        if(_entry_dpad.left())
         {
             _run_seed.move_manual_cursor(-1);
         }
-        else if(bn::keypad::right_pressed())
+        else if(_entry_dpad.right())
         {
             _run_seed.move_manual_cursor(1);
         }
-        else if(bn::keypad::up_pressed())
+        else if(_entry_dpad.up())
         {
             _run_seed.adjust_manual_digit(1);
         }
-        else if(bn::keypad::down_pressed())
+        else if(_entry_dpad.down())
         {
             _run_seed.adjust_manual_digit(-1);
         }

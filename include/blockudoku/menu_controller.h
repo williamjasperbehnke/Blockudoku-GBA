@@ -1,6 +1,8 @@
 #ifndef BLOCKUDOKU_MENU_CONTROLLER_H
 #define BLOCKUDOKU_MENU_CONTROLLER_H
 
+#include "blockudoku/dpad_repeater.h"
+
 namespace blockudoku
 {
 
@@ -57,6 +59,7 @@ private:
     int _block_style = 0;
     int _palette_style = 0;
     bool _assist_enabled = false;
+    dpad_repeater _dpad;
 
     [[nodiscard]] bool selected_entry_is_option() const;
     [[nodiscard]] entry selected_entry() const;

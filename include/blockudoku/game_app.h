@@ -2,6 +2,7 @@
 #define BLOCKUDOKU_GAME_APP_H
 
 #include "blockudoku/game_audio.h"
+#include "blockudoku/dpad_repeater.h"
 #include "blockudoku/game_state.h"
 #include "blockudoku/high_scores.h"
 #include "blockudoku/hint_service.h"
@@ -41,6 +42,7 @@ private:
     hint_service _hint_service;
     run_seed_controller _run_seed;
     initials_entry_controller _initials_entry;
+    dpad_repeater _entry_dpad;
     int _pending_score = 0;
     unsigned _pending_seed = 0;
 

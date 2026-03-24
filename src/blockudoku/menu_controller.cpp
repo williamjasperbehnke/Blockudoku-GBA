@@ -21,23 +21,23 @@ namespace blockudoku
     {
         update_result result;
 
-        if(bn::keypad::up_pressed())
+        if(_dpad.up())
         {
             _menu_index = wrap_index(_menu_index - 1, int(entry::count));
             result.selection_changed = true;
         }
-        else if(bn::keypad::down_pressed())
+        else if(_dpad.down())
         {
             _menu_index = wrap_index(_menu_index + 1, int(entry::count));
             result.selection_changed = true;
         }
 
         int option_delta = 0;
-        if(bn::keypad::left_pressed())
+        if(_dpad.left())
         {
             option_delta = -1;
         }
-        else if(bn::keypad::right_pressed())
+        else if(_dpad.right())
         {
             option_delta = 1;
         }

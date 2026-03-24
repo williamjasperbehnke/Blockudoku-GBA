@@ -6,7 +6,7 @@
 
 namespace blockudoku
 {
-    game_event input_controller::update(game_state& state) const
+    game_event input_controller::update(game_state& state)
     {
         if(bn::keypad::select_pressed())
         {
@@ -33,12 +33,12 @@ namespace blockudoku
             return { game_event_type::hint_cycled, 0 };
         }
 
-        if(bn::keypad::left_pressed() && state.move_cursor(-1, 0))
+        if(_dpad.left() && state.move_cursor(-1, 0))
         {
             return { game_event_type::cursor_moved, 0 };
         }
 
-        if(bn::keypad::right_pressed() && state.move_cursor(1, 0))
+        if(_dpad.right() && state.move_cursor(1, 0))
         {
             return { game_event_type::cursor_moved, 0 };
         }
@@ -53,12 +53,12 @@ namespace blockudoku
             return { game_event_type::slot_changed, 0 };
         }
 
-        if(bn::keypad::up_pressed() && state.move_cursor(0, -1))
+        if(_dpad.up() && state.move_cursor(0, -1))
         {
             return { game_event_type::cursor_moved, 0 };
         }
 
-        if(bn::keypad::down_pressed() && state.move_cursor(0, 1))
+        if(_dpad.down() && state.move_cursor(0, 1))
         {
             return { game_event_type::cursor_moved, 0 };
         }
