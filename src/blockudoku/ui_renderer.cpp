@@ -275,7 +275,7 @@ namespace blockudoku
             board_bg_top - 1,
             board_bg_left + (game_state::board_size * board_cell_tiles),
             board_bg_top + (game_state::board_size * board_cell_tiles));
-        clear_ui_region(tray_bg_left - 1, tray_bg_top - 1, tray_bg_left + 9, tray_bg_top + 11);
+        clear_ui_region(tray_bg_left - 1, tray_bg_top - 2, tray_bg_left + 9, tray_bg_top + 11);
 
         rebuild_ui_bg();
     }
@@ -550,14 +550,12 @@ namespace blockudoku
 
     void ui_renderer::draw_tray(const game_state& state)
     {
-        _text_generator.generate(52, -32, "NEXT", _text_sprites);
-
         for(int slot = 0; slot < game_state::slot_count; ++slot)
         {
             const piece_def& piece = piece_library::at(state.slot_piece_index(slot));
             const bool selected = slot == state.selected_slot();
 
-            const int slot_bg_y = tray_bg_top + (slot * 4);
+            const int slot_bg_y = tray_bg_top + (slot * 5) - 2;
             const int preview_left = tray_bg_left + 1;
 
             for(int y = 0; y < 4; ++y)
@@ -595,11 +593,11 @@ namespace blockudoku
             label += bn::to_string<2>(slot + 1);
             if(selected)
             {
-                _selected_tray_generator.generate(92, -8 + (slot * 32), label, _text_sprites);
+                _selected_tray_generator.generate(92, -24 + (slot * 40), label, _text_sprites);
             }
             else
             {
-                _text_generator.generate(92, -8 + (slot * 32), label, _text_sprites);
+                _text_generator.generate(92, -24 + (slot * 40), label, _text_sprites);
             }
         }
     }
