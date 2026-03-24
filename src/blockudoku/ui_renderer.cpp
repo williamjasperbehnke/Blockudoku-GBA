@@ -30,7 +30,7 @@ namespace blockudoku
 {
     namespace
     {
-        constexpr bn::array<bn::color, 16> selected_tray_text_colors = {
+        constexpr bn::array<bn::color, 16> accent_text_colors = {
             bn::color(0, 31, 0),
             bn::color(16, 24, 31),
             bn::color(2, 5, 17),
@@ -49,8 +49,7 @@ namespace blockudoku
             bn::color(2, 5, 17)
         };
 
-        constexpr bn::sprite_palette_item selected_tray_text_palette_item(
-                selected_tray_text_colors, bn::bpp_mode::BPP_4);
+        constexpr bn::sprite_palette_item accent_text_palette_item(accent_text_colors, bn::bpp_mode::BPP_4);
     }
 
     ui_renderer::ui_bg_map::ui_bg_map() :
@@ -62,14 +61,14 @@ namespace blockudoku
     ui_renderer::ui_renderer() :
         _ui_bg_map(new ui_bg_map()),
         _text_generator(common::fixed_8x8_sprite_font),
-        _selected_tray_generator(common::fixed_8x8_sprite_font, selected_tray_text_palette_item)
+        _accent_text_generator(common::fixed_8x8_sprite_font, accent_text_palette_item)
     {
         _text_generator.set_left_alignment();
-        _selected_tray_generator.set_left_alignment();
+        _accent_text_generator.set_left_alignment();
         _text_generator.set_bg_priority(0);
-        _selected_tray_generator.set_bg_priority(0);
+        _accent_text_generator.set_bg_priority(0);
         _text_generator.set_z_order(-100);
-        _selected_tray_generator.set_z_order(-100);
+        _accent_text_generator.set_z_order(-100);
         build_static_bg();
     }
 

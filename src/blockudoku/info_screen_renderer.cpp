@@ -14,7 +14,7 @@ namespace blockudoku
         renderer.clear_ui_map();
         renderer._text_sprites.clear();
 
-        renderer._text_generator.generate(-88, -58, "HIGH SCORES", renderer._text_sprites);
+        renderer._accent_text_generator.generate(-88, -58, "HIGH SCORES", renderer._text_sprites);
         const auto& entries = scores.entries();
 
         for(int index = 0; index < high_scores::entries_count; ++index)
@@ -33,7 +33,7 @@ namespace blockudoku
             renderer._text_generator.generate(-88, -40 + (index * 12), line, renderer._text_sprites);
         }
 
-        renderer._text_generator.generate(-88, 64, "A PLAY   B MENU", renderer._text_sprites);
+        renderer._accent_text_generator.generate(-88, 64, "A PLAY   B MENU", renderer._text_sprites);
         renderer.commit_frame();
     }
 
@@ -43,18 +43,22 @@ namespace blockudoku
         renderer.clear_ui_map();
         renderer._text_sprites.clear();
 
-        renderer._text_generator.generate(-88, -58, "CREDITS", renderer._text_sprites);
-        renderer._text_generator.generate(-88, -38, "BLOCKUDOKU GBA", renderer._text_sprites);
-        renderer._text_generator.generate(-88, -28, "DESIGN + CODE", renderer._text_sprites);
-        renderer._text_generator.generate(-88, -18, "WILLIAM BEHNKE", renderer._text_sprites);
+        renderer._accent_text_generator.generate(-88, -58, "CREDITS", renderer._text_sprites);
 
-        renderer._text_generator.generate(-88, 2, "ENGINE: BUTANO", renderer._text_sprites);
-        renderer._text_generator.generate(-88, 12, "PLATFORM: GAME BOY ADV", renderer._text_sprites);
-        renderer._text_generator.generate(-88, 22, "MUSIC: FRUIT.MOD", renderer._text_sprites);
-        renderer._text_generator.generate(-88, 32, "BY JESTER/SANITY", renderer._text_sprites);
-        renderer._text_generator.generate(-88, 42, "ATTR-NC-SA", renderer._text_sprites);
+        renderer._accent_text_generator.generate(-88, -42, "PROJECT", renderer._text_sprites);
+        renderer._text_generator.generate(-88, -32, "BLOCKUDOKU GBA", renderer._text_sprites);
 
-        renderer._text_generator.generate(-88, 64, "A/B BACK", renderer._text_sprites);
+        renderer._accent_text_generator.generate(-88, -18, "CREATED BY", renderer._text_sprites);
+        renderer._text_generator.generate(-88, -8, "WILLIAM BEHNKE", renderer._text_sprites);
+
+        renderer._accent_text_generator.generate(-88, 6, "TECH", renderer._text_sprites);
+        renderer._text_generator.generate(-88, 16, "BUTANO ENGINE", renderer._text_sprites);
+        renderer._text_generator.generate(-88, 26, "GAME BOY ADVANCE", renderer._text_sprites);
+
+        renderer._accent_text_generator.generate(-88, 40, "MUSIC", renderer._text_sprites);
+        renderer._text_generator.generate(-88, 50, "FRUIT.MOD  JESTER/SANITY", renderer._text_sprites);
+
+        renderer._accent_text_generator.generate(-88, 64, "A/B BACK", renderer._text_sprites);
         renderer.commit_frame();
     }
 
@@ -65,12 +69,12 @@ namespace blockudoku
         renderer.clear_ui_map();
         renderer._text_sprites.clear();
 
-        renderer._text_generator.generate(-88, -58, "NEW HIGH SCORE", renderer._text_sprites);
+        renderer._accent_text_generator.generate(-88, -58, "NEW HIGH SCORE", renderer._text_sprites);
         bn::string<24> score_text("SCORE ");
         score_text += bn::to_string<12>(score);
         renderer._text_generator.generate(-88, -42, score_text, renderer._text_sprites);
 
-        renderer._text_generator.generate(-88, -16, "ENTER INITIALS", renderer._text_sprites);
+        renderer._accent_text_generator.generate(-88, -16, "ENTER INITIALS", renderer._text_sprites);
         bn::string<16> initials_text;
         initials_text += initials[0];
         initials_text += ' ';
@@ -82,8 +86,8 @@ namespace blockudoku
         const int cursor_x = -88 + (selected_index * 16);
         renderer._text_generator.generate(cursor_x, 10, "^", renderer._text_sprites);
 
-        renderer._text_generator.generate(-88, 54, "UP/DOWN LETTER", renderer._text_sprites);
-        renderer._text_generator.generate(-88, 64, "L/R POS  A SAVE", renderer._text_sprites);
+        renderer._accent_text_generator.generate(-88, 54, "UP/DOWN LETTER", renderer._text_sprites);
+        renderer._accent_text_generator.generate(-88, 64, "L/R POS  A SAVE", renderer._text_sprites);
         renderer.commit_frame();
     }
 
@@ -93,8 +97,8 @@ namespace blockudoku
         renderer.clear_ui_map();
         renderer._text_sprites.clear();
 
-        renderer._text_generator.generate(-88, -58, "SET RUN SEED", renderer._text_sprites);
-        renderer._text_generator.generate(-88, -40, "PRESS A TO START", renderer._text_sprites);
+        renderer._accent_text_generator.generate(-88, -58, "SET RUN SEED", renderer._text_sprites);
+        renderer._accent_text_generator.generate(-88, -40, "PRESS A TO START", renderer._text_sprites);
 
         bn::string<24> seed_text("SEED ");
         for(int index = 0; index < ui_render_constants::seed_digits_count; ++index)
@@ -104,9 +108,9 @@ namespace blockudoku
         renderer._text_generator.generate(-88, -12, seed_text, renderer._text_sprites);
 
         const int cursor_x = -88 + 5 * 8 + (selected_index * 8);
-        renderer._selected_tray_generator.generate(cursor_x, 0, "^", renderer._text_sprites);
+        renderer._accent_text_generator.generate(cursor_x, 0, "^", renderer._text_sprites);
 
-        renderer._text_generator.generate(-88, 64, "UP/DOWN DIGIT  L/R POS", renderer._text_sprites);
+        renderer._accent_text_generator.generate(-88, 64, "UP/DOWN DIGIT  L/R POS", renderer._text_sprites);
         renderer.commit_frame();
     }
 }

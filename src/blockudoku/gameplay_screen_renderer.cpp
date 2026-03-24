@@ -249,7 +249,7 @@ namespace blockudoku
             label += bn::to_string<2>(slot + 1);
             if(selected)
             {
-                renderer._selected_tray_generator.generate(92, -24 + (slot * 40), label, renderer._text_sprites);
+                renderer._accent_text_generator.generate(92, -24 + (slot * 40), label, renderer._text_sprites);
             }
             else
             {
@@ -269,7 +269,7 @@ namespace blockudoku
         draw_tray(renderer, state);
         renderer._feedback.update_careful_condition(state);
         renderer._feedback.draw_messages(
-                state, renderer._text_generator, renderer._selected_tray_generator, renderer._text_sprites);
+                state, renderer._text_generator, renderer._accent_text_generator, renderer._text_sprites);
         renderer._feedback.apply_shake(renderer._gameplay_bg, renderer._ui_bg, renderer._text_sprites);
 
         renderer.commit_frame();

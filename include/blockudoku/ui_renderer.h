@@ -74,7 +74,7 @@ private:
     bn::optional<bn::regular_bg_ptr> _ui_bg;
     bn::optional<bn::regular_bg_map_ptr> _ui_bg_map_ptr;
     bn::sprite_text_generator _text_generator;
-    bn::sprite_text_generator _selected_tray_generator;
+    bn::sprite_text_generator _accent_text_generator;
     bn::vector<bn::sprite_ptr, 120> _text_sprites;
     scene_bg_type _scene_bg_type = scene_bg_type::none;
     int _block_style = 0;
