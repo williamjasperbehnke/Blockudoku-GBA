@@ -40,9 +40,10 @@ A Blockudoku-inspired puzzle game built for Game Boy Advance using [Butano](http
 ![Line Clear 3](screenshots/line3.png)
 ![Line Clear 4](screenshots/line4.png)
 
-### Initials Entry
+### Initials / Seed Entry
 
 ![Enter Initials](screenshots/enter_initials.png)
+![Seed](screenshots/seed.png)
 
 ### High Scores / Credits
 
