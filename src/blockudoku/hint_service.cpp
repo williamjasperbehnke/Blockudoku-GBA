@@ -28,7 +28,7 @@ namespace blockudoku
             return;
         }
 
-        _task.step(_step_budget);
+        _task.step(manual_step_budget);
         const bool hint_applied = try_apply_finished_hint(state, in_out_event);
         (void) hint_applied;
     }
@@ -46,7 +46,7 @@ namespace blockudoku
             return { game_event_type::none, 0 };
         }
 
-        _task.step(_step_budget);
+        _task.step(assist_step_budget);
         if(! _task.finished())
         {
             return { game_event_type::none, 0 };

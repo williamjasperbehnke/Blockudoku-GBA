@@ -11,13 +11,27 @@ namespace blockudoku
             return (value % count + count) % count;
         }
 
+        [[nodiscard]] block_style wrap_block_style(block_style style, int delta)
+        {
+            const int count = to_index(block_style::count);
+            const int next = wrap_index(to_index(style) + delta, count);
+            return static_cast<block_style>(next);
+        }
+
+        [[nodiscard]] palette_style wrap_palette_style(palette_style style, int delta)
+        {
+            const int count = to_index(palette_style::count);
+            const int next = wrap_index(to_index(style) + delta, count);
+            return static_cast<palette_style>(next);
+        }
+
         [[nodiscard]] bool confirm_pressed()
         {
             return bn::keypad::a_pressed() || bn::keypad::start_pressed();
         }
     }
 
-    menu_controller::update_result menu_controller::update(int block_style_count, int palette_style_count)
+    menu_controller::update_result menu_controller::update()
     {
         update_result result;
 
@@ -48,7 +62,7 @@ namespace blockudoku
 
         if(option_delta != 0 && selected_entry_is_option())
         {
-            adjust_selected_option(option_delta, block_style_count, palette_style_count, result);
+            adjust_selected_option(option_delta, result);
         }
 
         if(! result.option_changed && confirm_pressed())
@@ -72,7 +86,7 @@ namespace blockudoku
                 case entry::blocks:
                 case entry::palette:
                 case entry::assist:
-                    adjust_selected_option(1, block_style_count, palette_style_count, result);
+                    adjust_selected_option(1, result);
                     break;
 
                 case entry::count:
@@ -106,12 +120,12 @@ namespace blockudoku
         return _music_volume_step;
     }
 
-    int menu_controller::block_style() const
+    block_style menu_controller::selected_block_style() const
     {
         return _block_style;
     }
 
-    int menu_controller::palette_style() const
+    palette_style menu_controller::selected_palette_style() const
     {
         return _palette_style;
     }
@@ -131,8 +145,7 @@ namespace blockudoku
         return static_cast<entry>(_menu_index);
     }
 
-    void menu_controller::adjust_selected_option(
-            int delta, int block_style_count, int palette_style_count, update_result& result)
+    void menu_controller::adjust_selected_option(int delta, update_result& result)
     {
         if(delta == 0)
         {
@@ -154,12 +167,12 @@ namespace blockudoku
                 break;
 
             case entry::blocks:
-                _block_style = wrap_index(_block_style + delta, block_style_count);
+                _block_style = wrap_block_style(_block_style, delta);
                 result.option_changed = true;
                 break;
 
             case entry::palette:
-                _palette_style = wrap_index(_palette_style + delta, palette_style_count);
+                _palette_style = wrap_palette_style(_palette_style, delta);
                 result.option_changed = true;
                 break;
 

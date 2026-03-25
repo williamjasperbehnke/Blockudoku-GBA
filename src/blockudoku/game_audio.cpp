@@ -55,7 +55,7 @@ namespace blockudoku
         switch(event.type)
         {
             case game_event_type::hint_requested:
-                bn::sound_items::reload.play(0.35 * _sfx_volume, 0.9, 0);
+                bn::sound_items::reload.play(0.45 * _sfx_volume, 0.9, 0);
                 break;
 
             case game_event_type::slot_changed:
@@ -75,11 +75,11 @@ namespace blockudoku
                 break;
 
             case game_event_type::cleared:
-                bn::sound_items::victory_3.play(0.55 * _sfx_volume);
+                bn::sound_items::clear_chunk.play(0.95 * _sfx_volume);
                 break;
 
             case game_event_type::game_over:
-                bn::sound_items::defeat.play(0.75 * _sfx_volume);
+                bn::sound_items::defeat.play(0.95 * _sfx_volume);
                 break;
 
             case game_event_type::reset:

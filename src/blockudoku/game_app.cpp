@@ -92,8 +92,7 @@ namespace blockudoku
 
     void game_app::update_menu()
     {
-        const menu_controller::update_result menu_update =
-                _menu.update(ui_renderer::block_style_count, ui_renderer::palette_style_count);
+        const menu_controller::update_result menu_update = _menu.update();
 
         if(menu_update.selection_changed)
         {
@@ -145,28 +144,28 @@ namespace blockudoku
             _menu.menu_index(),
             percent_from_step(_menu.sfx_volume_step()),
             percent_from_step(_menu.music_volume_step()),
-            _menu.block_style(),
-            _menu.palette_style(),
+            _menu.selected_block_style(),
+            _menu.selected_palette_style(),
             _menu.assist_enabled());
     }
 
     void game_app::update_playing()
     {
-        _renderer.set_block_style(_menu.block_style());
-        _renderer.set_palette_style(_menu.palette_style());
+        if(bn::keypad::select_pressed())
+        {
+            _hint_service.reset();
+            _audio.on_event({ game_event_type::reset, 0 });
+            _scene = scene::menu;
+            return;
+        }
+
+        _renderer.set_block_style(_menu.selected_block_style());
+        _renderer.set_palette_style(_menu.selected_palette_style());
         game_event event = { game_event_type::none, 0 };
 
         if(_menu.assist_enabled())
         {
-            if(bn::keypad::select_pressed())
-            {
-                start_game();
-                event = { game_event_type::reset, 0 };
-            }
-            else
-            {
-                event = _hint_service.run_assist_step(_state);
-            }
+            event = _hint_service.run_assist_step(_state);
         }
         else
         {

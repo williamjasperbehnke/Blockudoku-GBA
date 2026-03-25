@@ -2,6 +2,7 @@
 #define BLOCKUDOKU_MENU_CONTROLLER_H
 
 #include "blockudoku/dpad_repeater.h"
+#include "blockudoku/style_types.h"
 
 namespace blockudoku
 {
@@ -30,13 +31,13 @@ public:
         bool music_volume_changed = false;
     };
 
-    [[nodiscard]] update_result update(int block_style_count, int palette_style_count);
+    [[nodiscard]] update_result update();
 
     [[nodiscard]] int menu_index() const;
     [[nodiscard]] int sfx_volume_step() const;
     [[nodiscard]] int music_volume_step() const;
-    [[nodiscard]] int block_style() const;
-    [[nodiscard]] int palette_style() const;
+    [[nodiscard]] block_style selected_block_style() const;
+    [[nodiscard]] palette_style selected_palette_style() const;
     [[nodiscard]] bool assist_enabled() const;
 
 private:
@@ -55,15 +56,15 @@ private:
 
     int _menu_index = 0;
     int _sfx_volume_step = 10;
-    int _music_volume_step = 10;
-    int _block_style = 0;
-    int _palette_style = 0;
+    int _music_volume_step = 5;
+    block_style _block_style = block_style::classic;
+    palette_style _palette_style = palette_style::classic;
     bool _assist_enabled = false;
     dpad_repeater _dpad;
 
     [[nodiscard]] bool selected_entry_is_option() const;
     [[nodiscard]] entry selected_entry() const;
-    void adjust_selected_option(int delta, int block_style_count, int palette_style_count, update_result& result);
+    void adjust_selected_option(int delta, update_result& result);
 };
 
 }

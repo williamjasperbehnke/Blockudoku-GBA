@@ -1,22 +1,18 @@
 #include "blockudoku/ui_renderer.h"
 
-#include "bn_array.h"
-#include "bn_bpp_mode.h"
-#include "bn_color.h"
 #include "bn_memory.h"
 #include "bn_regular_bg_item.h"
 #include "bn_regular_bg_map_cell_info.h"
 #include "bn_regular_bg_map_ptr.h"
 
-#include "bn_bg_palette_items_palette_classic.h"
-#include "bn_bg_palette_items_palette_mint.h"
-#include "bn_bg_palette_items_palette_sunrise.h"
 #include "bn_regular_bg_items_gameplay_bg.h"
 #include "bn_regular_bg_items_info_bg.h"
 #include "bn_regular_bg_items_title_bg.h"
+#include "bn_regular_bg_tiles_items_block_type_brick.h"
 #include "bn_regular_bg_tiles_items_block_type_classic.h"
-#include "bn_regular_bg_tiles_items_block_type_facet.h"
-#include "bn_regular_bg_tiles_items_block_type_strata.h"
+#include "bn_regular_bg_tiles_items_block_type_face.h"
+#include "bn_regular_bg_tiles_items_block_type_minecraft.h"
+#include "bn_regular_bg_tiles_items_block_type_flat.h"
 
 #include "common_fixed_8x8_sprite_font.h"
 
@@ -24,33 +20,11 @@
 #include "blockudoku/gameplay_screen_renderer.h"
 #include "blockudoku/info_screen_renderer.h"
 #include "blockudoku/menu_screen_renderer.h"
+#include "blockudoku/ui_palette_provider.h"
 #include "blockudoku/ui_render_constants.h"
 
 namespace blockudoku
 {
-    namespace
-    {
-        constexpr bn::array<bn::color, 16> accent_text_colors = {
-            bn::color(0, 31, 0),
-            bn::color(16, 24, 31),
-            bn::color(2, 5, 17),
-            bn::color(2, 5, 17),
-            bn::color(2, 5, 17),
-            bn::color(2, 5, 17),
-            bn::color(2, 5, 17),
-            bn::color(2, 5, 17),
-            bn::color(2, 5, 17),
-            bn::color(2, 5, 17),
-            bn::color(2, 5, 17),
-            bn::color(2, 5, 17),
-            bn::color(2, 5, 17),
-            bn::color(2, 5, 17),
-            bn::color(2, 5, 17),
-            bn::color(2, 5, 17)
-        };
-
-        constexpr bn::sprite_palette_item accent_text_palette_item(accent_text_colors, bn::bpp_mode::BPP_4);
-    }
 
     ui_renderer::ui_bg_map::ui_bg_map() :
         map_item(cells[0], bn::size(columns, rows))
@@ -61,7 +35,9 @@ namespace blockudoku
     ui_renderer::ui_renderer() :
         _ui_bg_map(new ui_bg_map()),
         _text_generator(common::fixed_8x8_sprite_font),
-        _accent_text_generator(common::fixed_8x8_sprite_font, accent_text_palette_item)
+        _accent_text_generator(
+                common::fixed_8x8_sprite_font,
+                ui_palette_provider::accent_palette_item(palette_style::classic))
     {
         _text_generator.set_left_alignment();
         _accent_text_generator.set_left_alignment();
@@ -69,40 +45,27 @@ namespace blockudoku
         _accent_text_generator.set_bg_priority(0);
         _text_generator.set_z_order(-100);
         _accent_text_generator.set_z_order(-100);
+        apply_text_palette();
         build_static_bg();
     }
 
-    void ui_renderer::set_block_style(int block_style)
+    void ui_renderer::set_block_style(block_style style)
     {
-        if(block_style < 0)
-        {
-            _block_style = 0;
-        }
-        else
-        {
-            _block_style = block_style % block_style_count;
-        }
-
+        _block_style = style;
         if(_block_style != _loaded_block_style)
         {
             rebuild_ui_bg();
         }
     }
 
-    void ui_renderer::set_palette_style(int palette_style)
+    void ui_renderer::set_palette_style(palette_style style)
     {
-        if(palette_style < 0)
-        {
-            _palette_style = 0;
-        }
-        else
-        {
-            _palette_style = palette_style % palette_style_count;
-        }
-
+        _palette_style = style;
         if(_palette_style != _loaded_palette_style)
         {
             rebuild_ui_bg();
+            apply_background_palette();
+            apply_text_palette();
         }
     }
 
@@ -118,10 +81,10 @@ namespace blockudoku
 
     void ui_renderer::render_main_menu(
             const high_scores& scores, int menu_index, int sfx_volume_percent, int music_volume_percent,
-            int block_style, int palette_style, bool assist_enabled)
+            block_style style, palette_style palette, bool assist_enabled)
     {
-        set_block_style(block_style);
-        set_palette_style(palette_style);
+        set_block_style(style);
+        set_palette_style(palette);
         menu_screen_renderer::render(*this, scores, menu_index, sfx_volume_percent, music_volume_percent, assist_enabled);
     }
 
@@ -172,6 +135,7 @@ namespace blockudoku
                 ui_render_constants::tray_bg_top + 11);
 
         rebuild_ui_bg();
+        apply_background_palette();
     }
 
     void ui_renderer::rebuild_ui_bg()
@@ -185,30 +149,26 @@ namespace blockudoku
         const bn::regular_bg_tiles_item* tiles_item = &bn::regular_bg_tiles_items::block_type_classic;
         switch(_block_style)
         {
-            case 1:
-                tiles_item = &bn::regular_bg_tiles_items::block_type_strata;
+            case block_style::brick:
+                tiles_item = &bn::regular_bg_tiles_items::block_type_brick;
                 break;
-            case 2:
-                tiles_item = &bn::regular_bg_tiles_items::block_type_facet;
+            case block_style::flat:
+                tiles_item = &bn::regular_bg_tiles_items::block_type_flat;
                 break;
+            case block_style::minecraft:
+                tiles_item = &bn::regular_bg_tiles_items::block_type_minecraft;
+                break;
+            case block_style::face:
+                tiles_item = &bn::regular_bg_tiles_items::block_type_face;
+                break;
+            case block_style::classic:
+            case block_style::count:
             default:
                 tiles_item = &bn::regular_bg_tiles_items::block_type_classic;
                 break;
         }
 
-        const bn::bg_palette_item* palette_item = &bn::bg_palette_items::palette_classic;
-        switch(_palette_style)
-        {
-            case 1:
-                palette_item = &bn::bg_palette_items::palette_sunrise;
-                break;
-            case 2:
-                palette_item = &bn::bg_palette_items::palette_mint;
-                break;
-            default:
-                palette_item = &bn::bg_palette_items::palette_classic;
-                break;
-        }
+        const bn::bg_palette_item* palette_item = &ui_palette_provider::background_palette_item(_palette_style);
 
         bn::regular_bg_item bg_item(*tiles_item, *palette_item, _ui_bg_map->map_item);
 
@@ -218,6 +178,32 @@ namespace blockudoku
         _ui_bg_map_ptr = _ui_bg->map();
         _loaded_block_style = _block_style;
         _loaded_palette_style = _palette_style;
+    }
+
+    void ui_renderer::apply_background_palette()
+    {
+        bn::bg_palette_ptr palette = ui_palette_provider::create_background_palette(_palette_style);
+
+        if(_title_bg)
+        {
+            _title_bg->set_palette(palette);
+        }
+
+        if(_info_bg)
+        {
+            _info_bg->set_palette(palette);
+        }
+
+        if(_gameplay_bg)
+        {
+            _gameplay_bg->set_palette(palette);
+        }
+    }
+
+    void ui_renderer::apply_text_palette()
+    {
+        _text_generator.set_palette_item(ui_palette_provider::text_palette_item(_palette_style));
+        _accent_text_generator.set_palette_item(ui_palette_provider::accent_palette_item(_palette_style));
     }
 
     void ui_renderer::set_scene_background(scene_bg_type type)
@@ -288,12 +274,14 @@ namespace blockudoku
     {
         switch(_block_style)
         {
-            case 0:
-                return "  CLASSIC";
-            case 1:
-                return "  STRATA";
-            case 2:
-                return "  FACET";
+            case block_style::brick:
+                return "  BRICK";
+            case block_style::flat:
+                return "  FLAT";
+            case block_style::minecraft:
+                return "  MINECRFT";
+            case block_style::face:
+                return "  FACE";
             default:
                 return "  CLASSIC";
         }
@@ -303,12 +291,20 @@ namespace blockudoku
     {
         switch(_palette_style)
         {
-            case 0:
-                return "  CLASSIC";
-            case 1:
+            case palette_style::sunrise:
                 return "  SUNRISE";
-            case 2:
+            case palette_style::mint:
                 return "  MINT";
+            case palette_style::ocean:
+                return "  OCEAN";
+            case palette_style::forest:
+                return "  FOREST";
+            case palette_style::colorblind:
+                return "  CBLIND";
+            case palette_style::grayscale:
+                return "  GRAYSCL";
+            case palette_style::gameboy:
+                return "  GAMEBOY";
             default:
                 return "  CLASSIC";
         }

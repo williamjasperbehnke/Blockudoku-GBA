@@ -30,6 +30,7 @@ public:
 
 private:
     int _shake_frames = 0;
+    int _shake_index = 0;
     int _clear_popup_frames = 0;
     int _last_cleared_cells = 0;
     int _careful_popup_frames = 0;

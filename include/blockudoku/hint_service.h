@@ -19,13 +19,13 @@ public:
     [[nodiscard]] game_event run_assist_step(game_state& state);
 
 private:
-    static constexpr int default_step_budget = 32;
+    static constexpr int manual_step_budget = 32;
+    static constexpr int assist_step_budget = 8;
 
     [[nodiscard]] bool try_apply_finished_hint(game_state& state, game_event& out_event);
 
     hint_search_task _task;
     bool _manual_pending = false;
-    int _step_budget = default_step_budget;
 };
 
 }

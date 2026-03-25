@@ -24,6 +24,7 @@ namespace blockudoku
         {
             const int frames = 4 + (cleared_cells / 2);
             _shake_frames = frames < 12 ? frames : 12;
+            _shake_index = 0;
             _clear_popup_frames = clear_popup_duration_frames;
             _last_cleared_cells = cleared_cells;
         }
@@ -38,6 +39,7 @@ namespace blockudoku
         }
 
         _shake_frames = 0;
+        _shake_index = 0;
         _clear_popup_frames = 0;
         _last_cleared_cells = 0;
         _careful_popup_frames = 0;
@@ -80,6 +82,8 @@ namespace blockudoku
                                           bn::sprite_text_generator& accent_generator,
                                           bn::ivector<bn::sprite_ptr>& output_sprites)
     {
+        bool clear_message_visible = false;
+
         if(_clear_popup_frames > 0)
         {
             const int age = clear_popup_duration_frames - _clear_popup_frames;
@@ -87,6 +91,7 @@ namespace blockudoku
             const int wobble = (age % 6 < 3) ? -1 : 1;
             const int text_x = -40 + wobble;
             const int text_y = -2 - rise;
+            clear_message_visible = true;
 
             if(state.combo_streak() > 1)
             {
@@ -106,7 +111,7 @@ namespace blockudoku
             --_clear_popup_frames;
         }
 
-        if(_careful_popup_frames > 0)
+        if(! clear_message_visible && _careful_popup_frames > 0)
         {
             const int age = careful_popup_duration_frames - _careful_popup_frames;
             const int rise = age > 0 ? age / 6 : 0;
@@ -134,10 +139,17 @@ namespace blockudoku
     void gameplay_feedback::apply_shake(bn::optional<bn::regular_bg_ptr>& gameplay_bg, bn::optional<bn::regular_bg_ptr>& ui_bg,
                                         bn::ivector<bn::sprite_ptr>& text_sprites)
     {
+        static constexpr int shake_pattern[][2] = {
+            { 2, 0 }, { -2, 0 }, { 1, 1 }, { -1, 1 }, { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 }, { 1, 0 }, { -1, 0 },
+            { 0, 0 }, { 0, 0 }
+        };
+        constexpr int shake_pattern_size = int(sizeof(shake_pattern) / sizeof(shake_pattern[0]));
+
         if(_shake_frames > 0)
         {
-            const int shake_x = (_shake_frames % 2 == 0) ? 1 : -1;
-            const int shake_y = (_shake_frames % 3 == 0) ? 1 : 0;
+            const int pattern_index = _shake_index < shake_pattern_size ? _shake_index : (shake_pattern_size - 1);
+            const int shake_x = shake_pattern[pattern_index][0];
+            const int shake_y = shake_pattern[pattern_index][1];
 
             if(gameplay_bg)
             {
@@ -155,6 +167,7 @@ namespace blockudoku
                 sprite.set_y(sprite.y() + shake_y);
             }
 
+            ++_shake_index;
             --_shake_frames;
         }
         else

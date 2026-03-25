@@ -2,6 +2,7 @@
 #define BLOCKUDOKU_UI_RENDERER_H
 
 #include "bn_optional.h"
+#include "bn_bg_palette_ptr.h"
 #include "bn_regular_bg_ptr.h"
 #include "bn_regular_bg_map_ptr.h"
 #include "bn_regular_bg_map_item.h"
@@ -12,6 +13,7 @@
 #include "bn_vector.h"
 
 #include "blockudoku/gameplay_feedback.h"
+#include "blockudoku/style_types.h"
 
 namespace blockudoku
 {
@@ -25,19 +27,16 @@ class info_screen_renderer;
 class ui_renderer
 {
 public:
-    static constexpr int block_style_count = 3;
-    static constexpr int palette_style_count = 3;
-
     ui_renderer();
 
-    void set_block_style(int block_style);
-    void set_palette_style(int palette_style);
+    void set_block_style(block_style style);
+    void set_palette_style(palette_style style);
     void trigger_clear_feedback(int cleared_cells);
 
     void render(const game_state& state);
     void render_main_menu(
             const high_scores& scores, int menu_index, int sfx_volume_percent, int music_volume_percent,
-            int block_style, int palette_style, bool assist_enabled);
+            block_style style, palette_style palette, bool assist_enabled);
     void render_high_scores(const high_scores& scores);
     void render_credits();
     void render_seed_entry(const char seed_digits[8], int selected_index);
@@ -77,14 +76,16 @@ private:
     bn::sprite_text_generator _accent_text_generator;
     bn::vector<bn::sprite_ptr, 120> _text_sprites;
     scene_bg_type _scene_bg_type = scene_bg_type::none;
-    int _block_style = 0;
-    int _loaded_block_style = -1;
-    int _palette_style = 0;
-    int _loaded_palette_style = -1;
+    block_style _block_style = block_style::classic;
+    block_style _loaded_block_style = block_style::count;
+    palette_style _palette_style = palette_style::classic;
+    palette_style _loaded_palette_style = palette_style::count;
     gameplay_feedback _feedback;
 
     void build_static_bg();
     void rebuild_ui_bg();
+    void apply_background_palette();
+    void apply_text_palette();
     void set_scene_background(scene_bg_type type);
 
     void set_ui_cell(int map_x, int map_y, int tile_index);

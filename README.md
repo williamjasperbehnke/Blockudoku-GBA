@@ -9,7 +9,10 @@ A Blockudoku-inspired puzzle game built for Game Boy Advance using [Butano](http
 - Multiple block styles and palette themes.
 - Seeded runs (auto seed or manual seed entry).
 - High scores saved to SRAM, including run seed.
-- Hint system and optional assist/autoplay mode.
+- Hint system with separate step budgets:
+  - Manual hint (`START`): higher search budget
+  - Assist mode: lower per-frame budget for smoother frame pacing
+- Optional assist/autoplay mode.
 - Combo scoring, clear feedback, screen shake, and UI messages.
 - Music + SFX with configurable volume.
 
@@ -23,7 +26,8 @@ A Blockudoku-inspired puzzle game built for Game Boy Advance using [Butano](http
 
 ![Board 1](screenshots/board1.png)
 ![Board 2](screenshots/board2.png)
-![Multiple Block Types](screenshots/multiple_block_types.png)
+![Board 3](screenshots/board3.png)
+![Board 4](screenshots/board4.png)
 
 ### Gameplay Feedback
 
@@ -32,9 +36,9 @@ A Blockudoku-inspired puzzle game built for Game Boy Advance using [Butano](http
 
 ### Line Clears
 
-![Line Clear 1](screenshots/line1.png)
 ![Line Clear 2](screenshots/line2.png)
 ![Line Clear 3](screenshots/line3.png)
+![Line Clear 4](screenshots/line4.png)
 
 ### Initials Entry
 
@@ -56,7 +60,7 @@ Butano is included as a git submodule under `third_party/butano`.
 ## Setup
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/williamjasperbehnke/Blockudoku.git
 cd blockudoku
 git submodule update --init --recursive
 ```
@@ -84,7 +88,7 @@ Open `blockudoku.gba` in your preferred GBA emulator (for example, mGBA).
 - `L / R`: Cycle tray piece
 - `START`: Request best-move hint
 - `B`: Cycle through valid hint placements
-- `SELECT`: Restart run
+- `SELECT`: Return to main menu
 
 ### Menus / Entry Screens
 
@@ -100,6 +104,7 @@ Open `blockudoku.gba` in your preferred GBA emulator (for example, mGBA).
 - `src/blockudoku/board_rules.cpp`: board placement and clear logic
 - `src/blockudoku/hint_solver.cpp`: move search/solver logic
 - `src/blockudoku/ui_renderer.cpp`: UI rendering facade
+- `src/blockudoku/ui_palette_provider.cpp`: palette/theme mapping and text palette data
 - `src/blockudoku/gameplay_screen_renderer.cpp`: gameplay view rendering
 - `src/blockudoku/menu_screen_renderer.cpp`: main menu rendering
 - `src/blockudoku/info_screen_renderer.cpp`: highscores/credits/entry screens
