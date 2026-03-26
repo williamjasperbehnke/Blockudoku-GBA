@@ -11,7 +11,7 @@ namespace blockudoku
 {
     void gameplay_screen_renderer::draw_header(ui_renderer& renderer, const game_state& state)
     {
-        bn::string<20> score_text("SCORE ");
+        bn::string<20> score_text("PTS ");
         score_text += bn::to_string<12>(state.score());
         renderer._text_generator.generate(38, -68, score_text, renderer._text_sprites);
 
