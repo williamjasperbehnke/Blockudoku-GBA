@@ -8,6 +8,7 @@ namespace blockudoku
     namespace
     {
         constexpr bn::fixed music_volume_scale = bn::fixed(3) / 10;
+        constexpr int achievements_visible_rows = 4;
 
         [[nodiscard]] int percent_from_step(int volume_step)
         {
@@ -49,22 +50,123 @@ namespace blockudoku
     void game_app::open_seed_entry()
     {
         _run_seed.begin_manual_entry();
-        _entry_dpad.reset();
+        reset_entry_navigation();
         _scene = scene::enter_seed;
     }
 
     void game_app::go_to_menu()
     {
-        _entry_dpad.reset();
+        reset_entry_navigation();
         _scene = scene::menu;
     }
 
     void game_app::open_resume_prompt(scene return_scene)
     {
-        _entry_dpad.reset();
+        reset_entry_navigation();
         _resume_prompt_index = 0;
         _resume_prompt_return_scene = return_scene;
         _scene = scene::resume_prompt;
+    }
+
+    void game_app::reset_entry_navigation()
+    {
+        _entry_dpad.reset();
+    }
+
+    bool game_app::handle_playing_shortcuts()
+    {
+        const bool l_down = bn::keypad::l_held() || bn::keypad::l_pressed();
+        const bool r_down = bn::keypad::r_held() || bn::keypad::r_pressed();
+        const bool dev_combo = _dev_mode && l_down && r_down;
+
+        if(! dev_combo)
+        {
+            _dev_score_dpad.reset();
+        }
+
+        if(l_down && r_down && bn::keypad::select_pressed())
+        {
+            _dev_mode = ! _dev_mode;
+            _audio.on_event({ game_event_type::slot_changed, 0 });
+            _renderer.render(_state, _dev_mode);
+            return true;
+        }
+
+        const auto apply_dev_score = [&](int delta)
+        {
+            _state.dev_adjust_score(delta);
+            _high_scores.save_game_state(_state);
+            _audio.on_event({ game_event_type::slot_changed, 0 });
+            _renderer.render(_state, _dev_mode);
+            return true;
+        };
+
+        if(dev_combo && _dev_score_dpad.up())
+        {
+            return apply_dev_score(100);
+        }
+
+        if(dev_combo && _dev_score_dpad.down())
+        {
+            return apply_dev_score(-100);
+        }
+
+        if(_dev_mode && bn::keypad::b_pressed())
+        {
+            _state.dev_refresh_tray();
+            _hint_service.reset();
+            _high_scores.save_game_state(_state);
+            _audio.on_event({ game_event_type::placed, 0 });
+            _renderer.render(_state, _dev_mode);
+            return true;
+        }
+
+        if(bn::keypad::select_pressed())
+        {
+            _high_scores.save_game_state(_state);
+            _hint_service.reset();
+            _audio.on_event({ game_event_type::reset, 0 });
+            go_to_menu();
+            return true;
+        }
+
+        return false;
+    }
+
+    void game_app::handle_manual_playing_event(game_event& event)
+    {
+        if(event.type == game_event_type::reset)
+        {
+            start_game();
+        }
+        else if(event.type == game_event_type::hint_requested)
+        {
+            _hint_service.request_manual(_state);
+        }
+        else if(event.type != game_event_type::none)
+        {
+            _hint_service.cancel_manual();
+        }
+
+        _hint_service.update_manual(_state, event);
+    }
+
+    void game_app::handle_playing_game_over()
+    {
+        _high_scores.clear_saved_game();
+        _pending_score = _state.score();
+        _pending_seed = _state.run_seed();
+
+        if(_high_scores.qualifies(_pending_score))
+        {
+            _initials_entry.begin();
+            reset_entry_navigation();
+            _scene = scene::enter_initials;
+        }
+        else
+        {
+            _scene = scene::high_scores;
+        }
     }
 
     void game_app::update()
@@ -154,9 +256,9 @@ namespace blockudoku
                 break;
 
             case menu_controller::action::show_achievements:
-                _achievements_scroll.configure(high_scores::achievements_count, 4);
+                _achievements_scroll.configure(high_scores::achievements_count, achievements_visible_rows);
                 _achievements_scroll.reset();
-                _entry_dpad.reset();
+                reset_entry_navigation();
                 _scene = scene::achievements;
                 break;
 
@@ -188,57 +290,8 @@ namespace blockudoku
 
     void game_app::update_playing()
     {
-        const bool l_down = bn::keypad::l_held() || bn::keypad::l_pressed();
-        const bool r_down = bn::keypad::r_held() || bn::keypad::r_pressed();
-        const bool dev_combo = _dev_mode && l_down && r_down;
-
-        if(! dev_combo)
+        if(handle_playing_shortcuts())
         {
-            _dev_score_dpad.reset();
-        }
-
-        if(l_down && r_down && bn::keypad::select_pressed())
-        {
-            _dev_mode = ! _dev_mode;
-            _audio.on_event({ game_event_type::slot_changed, 0 });
-            _renderer.render(_state, _dev_mode);
-            return;
-        }
-
-        if(dev_combo && _dev_score_dpad.up())
-        {
-            _state.dev_adjust_score(100);
-            _high_scores.save_game_state(_state);
-            _audio.on_event({ game_event_type::slot_changed, 0 });
-            _renderer.render(_state, _dev_mode);
-            return;
-        }
-
-        if(dev_combo && _dev_score_dpad.down())
-        {
-            _state.dev_adjust_score(-100);
-            _high_scores.save_game_state(_state);
-            _audio.on_event({ game_event_type::slot_changed, 0 });
-            _renderer.render(_state, _dev_mode);
-            return;
-        }
-
-        if(_dev_mode && bn::keypad::b_pressed())
-        {
-            _state.dev_refresh_tray();
-            _hint_service.reset();
-            _high_scores.save_game_state(_state);
-            _audio.on_event({ game_event_type::placed, 0 });
-            _renderer.render(_state, _dev_mode);
-            return;
-        }
-
-        if(bn::keypad::select_pressed())
-        {
-            _high_scores.save_game_state(_state);
-            _hint_service.reset();
-            _audio.on_event({ game_event_type::reset, 0 });
-            go_to_menu();
             return;
         }
 
@@ -253,21 +306,7 @@ namespace blockudoku
         else
         {
             event = _input.update(_state);
-
-            if(event.type == game_event_type::reset)
-            {
-                start_game();
-            }
-            else if(event.type == game_event_type::hint_requested)
-            {
-                _hint_service.request_manual(_state);
-            }
-            else if(event.type != game_event_type::none)
-            {
-                _hint_service.cancel_manual();
-            }
-
-            _hint_service.update_manual(_state, event);
+            handle_manual_playing_event(event);
         }
 
         if(event.cleared_cells > 0)
@@ -288,20 +327,7 @@ namespace blockudoku
             return;
         }
 
-        _high_scores.clear_saved_game();
-        _pending_score = _state.score();
-        _pending_seed = _state.run_seed();
-
-        if(_high_scores.qualifies(_pending_score))
-        {
-            _initials_entry.begin();
-            _entry_dpad.reset();
-            _scene = scene::enter_initials;
-        }
-        else
-        {
-            _scene = scene::high_scores;
-        }
+        handle_playing_game_over();
     }
 
     void game_app::update_enter_initials()
@@ -400,7 +426,7 @@ namespace blockudoku
 
     void game_app::update_achievements()
     {
-        _achievements_scroll.configure(high_scores::achievements_count, 4);
+        _achievements_scroll.configure(high_scores::achievements_count, achievements_visible_rows);
 
         if(_entry_dpad.up())
         {

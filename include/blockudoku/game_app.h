@@ -55,9 +55,13 @@ private:
     scene _resume_prompt_return_scene = scene::menu;
 
     void initialize_audio_once();
+    void reset_entry_navigation();
     void open_seed_entry();
     void go_to_menu();
     void open_resume_prompt(scene return_scene);
+    [[nodiscard]] bool handle_playing_shortcuts();
+    void handle_manual_playing_event(game_event& event);
+    void handle_playing_game_over();
 
     void update_menu();
     void update_resume_prompt();
